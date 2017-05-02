@@ -1,0 +1,31 @@
+################################################################################################
+# Group Members: Alan King, Zach Guillot, Robin Epperson, Hunter Allen
+# Date Due: 5-12-2017
+# Description: Code for the Great Pie Project. This what we will submit for cyberstorm.
+################################################################################################
+
+# Required import list for program to run
+import pygame
+import Rpi.GPIO as GPIO, time, os
+
+
+
+
+# This is basic photoresistor reading. We will modify it as necessary.
+DEBUG = 1
+GPIO.setmode(GPIO.BCM)
+
+def RCtime(RCpin):
+	reading = 0
+	GPIO.setup(RCpin, GPIO.OUT)
+	GPIO.output(RCpin, GPIO.LOW)
+	time.sleep(0.1)
+	
+	GPIO.setup(RCpin, GPIO.IN)
+	while (GPIO.input(RCpin)) == GPIO.LOW):
+		reading += 1
+	return reading
+	
+while True:
+	print RCtime(18) # read RC timing using pin #18
+# End of basic photoresistor reading.
