@@ -78,14 +78,6 @@ class Game():
 		Game.text.pack(fill = Y, expand = 1)
 		text_frame.pack(side = RIGHT, fill = Y) 
 		text_frame.pack_propagate(False)
-		
-
-		
-window = Tk()
-window.title("Specularity Game")		
-	
-window.mainloop()
-
 try:
 	while (True):
 	
@@ -128,3 +120,8 @@ try:
 			GPIO.output(red, False)
 			GPIO.output(green, False)
 			GPIO.output(blue, False)
+			
+window = Tk()
+window.title("Specularity Game")		
+	
+window.mainloop()
