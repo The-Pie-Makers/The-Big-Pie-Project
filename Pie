@@ -7,29 +7,49 @@
 # Required import list for program to run
 import pygame
 import Rpi.GPIO as GPIO, time, os
+from Tkinter import *
 
 
+# Seting up the LED pins
+red = 23
+green = 24
+blue = 25
 
+# setup the input buttons
+redB = 22
+greenB = 27
+blueB = 17
 
-# This is basic photoresistor reading. We will modify it as necessary.
-DEBUG = 1
-GPIO.setmode(GPIO.BCM)
+# setup the input pins
+GPIO.setup(redB, GPIO.IN, GPIO.PUD_DOWN)
+GPIO.setup(greenB, GPIO.IN, GPIO.PUD_DOWN)
+GPIO.setup(blueB, GPIO.IN, GPIO.PUD_DOWN)
 
-def RCtime(RCpin):
-	reading = 0
-	GPIO.setup(RCpin, GPIO.OUT)
-	GPIO.output(RCpin, GPIO.LOW)
-	time.sleep(0.1)
+# setup the output pins
+GPIO.setup(red, GPIO.OUT)
+GPIO.setup(green, GPIO.OUT)
+GPIO.setup(blue, GPIO.OUT)
+
+class Photoresistor():
+	# This is basic photoresistor reading. We will modify it as necessary.
+	DEBUG = 1
+	GPIO.setmode(GPIO.BCM)
+
+	def RCtime(RCpin):
+		reading = 0
+		GPIO.setup(RCpin, GPIO.OUT)
+		GPIO.output(RCpin, GPIO.LOW)
+		time.sleep(0.1)
 	
-	GPIO.setup(RCpin, GPIO.IN)
-	while (GPIO.input(RCpin)) == GPIO.LOW):
-		reading += 1
-	return reading
+		GPIO.setup(RCpin, GPIO.IN)
+		while (GPIO.input(RCpin)) == GPIO.LOW):
+			reading += 1
+		return reading
 	
-while True:
-	print RCtime(18) # read RC timing using pin #18
-# End of basic photoresistor reading.
-
+	while True:
+		print RCtime(18) # read RC timing using pin #18
+	# End of basic photoresistor reading.
+	
 class Game():
 	def __init__(self, parent):
 		# call the constructor in the superclass
@@ -59,7 +79,52 @@ class Game():
 		text_frame.pack(side = RIGHT, fill = Y) 
 		text_frame.pack_propagate(False)
 		
+
+		
 window = Tk()
 window.title("Specularity Game")		
 	
 window.mainloop()
+
+try:
+	while (True):
+	
+		if (GPIO.input(redB) == True and GPIO.input(greenB) == True and GPIO.input(blueB) == True):
+			GPIO.output(red, True)
+			GPIO.output(green, True)
+			GPIO.output(blue, True)
+		
+		elif (GPIO.input(redB) == True and GPIO.input(greenB) == True):
+			GPIO.output(red, True)
+			GPIO.output(green, True)
+			GPIO.output(blue, False)
+			
+		elif (GPIO.input(redB) == True and GPIO.input(blueB) == True):
+			GPIO.output(red, True)
+			GPIO.output(green, False)
+			GPIO.output(blue, True)
+			
+		elif (GPIO.input(greenB) == True and GPIO.input(blueB) == True):
+			GPIO.output(red, False)
+			GPIO.output(green, True)
+			GPIO.output(blue, True)
+			
+		elif (GPIO.input(redB) == True):
+			GPIO.output(red, True)
+			GPIO.output(green, False)
+			GPIO.output(blue, False)
+			
+		elif (GPIO.input(greenB) == True):
+			GPIO.output(red, False)
+			GPIO.output(green, True)
+			GPIO.output(blue, False)
+			
+		elif (GPIO.input(blueB) == True):
+			GPIO.output(red, False)
+			GPIO.output(green, False)
+			GPIO.output(blue, True)
+			
+		else:
+			GPIO.output(red, False)
+			GPIO.output(green, False)
+			GPIO.output(blue, False)
