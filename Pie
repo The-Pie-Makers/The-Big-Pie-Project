@@ -12,6 +12,8 @@ from Tkinter import *
 GPIO.setwarning(False)
 pygame.init()
 
+DEBUG = 1
+
 # Seting up the LED pins
 red = 23
 green = 24
@@ -21,6 +23,9 @@ blue = 25
 redB = 22
 greenB = 27
 blueB = 17
+
+# use the GPIO BROADCOM pin mode
+GPIO.setmode(GPIO.BCM)
 
 # setup the input pins
 GPIO.setup(redB, GPIO.IN, GPIO.PUD_DOWN)
@@ -32,25 +37,19 @@ GPIO.setup(red, GPIO.OUT)
 GPIO.setup(green, GPIO.OUT)
 GPIO.setup(blue, GPIO.OUT)
 
-class Photoresistor():
-	# This is basic photoresistor reading. We will modify it as necessary.
-	DEBUG = 1
-	GPIO.setmode(GPIO.BCM)
-
-	def RCtime(RCpin):
-		reading = 0
-		GPIO.setup(RCpin, GPIO.OUT)
-		GPIO.output(RCpin, GPIO.LOW)
-		time.sleep(0.1)
+def RCtime(RCpin):
+	reading = 0
+	GPIO.setup(RCpin, GPIO.OUT)
+	GPIO.output(RCpin, GPIO.LOW)
+	time.sleep(0.1)
 	
-		GPIO.setup(RCpin, GPIO.IN)
-		while (GPIO.input(RCpin)) == GPIO.LOW):
-			reading += 1
-		return reading
+	GPIO.setup(RCpin, GPIO.IN)
+	while (GPIO.input(RCpin)) == GPIO.LOW):
+		reading += 1
+	return reading
 	
-	while True:
-		print RCtime(18) # read RC timing using pin #18
-	# End of basic photoresistor reading.
+while True:
+	print RCtime(18) # read RC timing using pin #18
 	
 class Game():
 	def __init__(self, parent):
