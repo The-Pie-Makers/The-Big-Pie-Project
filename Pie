@@ -9,6 +9,8 @@ import pygame
 import Rpi.GPIO as GPIO, time, os
 from Tkinter import *
 
+GPIO.setwarning(False)
+pygame.init()
 
 # Seting up the LED pins
 red = 23
