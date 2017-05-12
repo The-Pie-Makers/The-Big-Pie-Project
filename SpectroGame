@@ -1,0 +1,196 @@
+################################################################################################
+# Group Members: Alan King, Zach Guillot, Robin Epperson, Hunter Allen
+# Date Due: 5-12-2017
+# Description: Code for the Great Pie Project. This what we will submit for cyberstorm.
+################################################################################################
+
+# Required import list for program to run
+import RPi.GPIO as GPIO, time, os
+from Tkinter import *
+from timeit import default_timer
+import sys
+import time
+
+GPIO.setwarnings(False)
+
+
+# setup the input buttons
+redB = 17
+greenB = 27
+blueB = 22
+
+DEBUG = 1
+GPIO.setmode(GPIO.BCM)
+
+# setup the input pins
+GPIO.setup(redB, GPIO.IN, GPIO.PUD_DOWN)
+GPIO.setup(greenB, GPIO.IN, GPIO.PUD_DOWN)
+GPIO.setup(blueB, GPIO.IN, GPIO.PUD_DOWN)
+
+# This is basic photoresistor reading. We will modify it as necessary.
+
+def RCtime(RCpin):
+    reading = 0
+    GPIO.setup(RCpin, GPIO.OUT)
+    GPIO.output(RCpin, GPIO.LOW)
+    time.sleep(0.1)
+    GPIO.setup(RCpin, GPIO.IN)
+    while ((GPIO.input(RCpin)) == GPIO.LOW):
+        reading += 1
+    return reading
+
+
+# Covert seconds to minutes in order to distplay time taken
+def secToMinConverter(totalSeconds):
+    seconds = totalSeconds
+    minutes = 0
+    while (time >= 60):
+        seconds -=  60
+        minutes += 1
+    return "You have taken " + "{}" + " minutes and " "{}"+ " seconds.".format(minutes, seconds)
+
+# Export score to Leaderboard text file
+def scoreBoard(totalSeconds):
+    with open("Leaderboard.txt","r") as f_open:
+        data = f_open.read()
+    groupName = raw_input("What is your groups name?")
+    score = totalSeconds
+    LBformat = str("{}\n" + "{}" + " : " + "{}").format(data, groupName, score)
+    sys.stdout = open("Leaderboard.txt", "w")
+    print "{}".format(LBformat)
+    time.sleep(1.0)
+    sys.stdout.close()
+    
+# This is the GUI
+class Spectro(Frame):
+    
+    def __init__(self, master):
+        Frame.__init__(self, master)
+        self.master = master
+
+    # sets up the labels and entrys as well as the buttons
+    def setUpSpectro(self):
+        L1 = Label(self.master, text = "The Spectro Game")
+        L1.grid(row = 0, column = 0, columnspan = 4)
+
+        self.setlabletwo("Bend Flex Resistor; Press Buttons to Light LED")
+
+        global E1
+        E1 = Entry(self.master)
+        E1.grid(row = 4, column = 0, columnspan = 1, sticky = E)
+        
+        global E2
+        E2 = Entry(self.master, background = "light grey", relief = FLAT)
+        E2.grid(row = 3, column = 0, columnspan = 4, sticky = W + E)
+
+        b1 = Button(self.master, text = "Check Answer", command = self.callback)
+        b1.grid(row = 4, column = 2, sticky = E)
+
+        b2 = Button(self.master, text = "Exit", command = self.master.destroy)
+        b2.grid(row = 4, column = 4, sticky = W)
+
+        b3 = Button(self.master, text = "Go To Board", command = self.start)
+        b3.grid(row = 4, column = 3, sticky = W + E)
+
+    # begins running a button that links the player to the breadboard
+    def start(self):
+        playGame()
+        self.entryupdate(var)
+
+    # updates the entry based on button input and resistance values
+    def entryupdate(self, var):
+        E2.delete(0, END)
+        E2.insert(0,var)
+
+    # calls a string for checker  
+    def callback(self):
+        text = "string"
+        var = E1.get()
+        self.checker(var)
+
+    # sets the Label to the win and lose phrases
+    def setlabletwo(self, text):
+        L2 = Label(text = text)
+        L2.grid(row = 1, column = 0, columnspan = 4)
+
+    # actually compares input against string command that will win the game
+    def checker(self, var):
+        if var == "wheat":
+            win = "                             You win                                "
+            self.setlabletwo(win)
+            fTime = default_timer() - sTime
+            self.entryupdate(fTime)
+            scoreBoard(fTime)
+            E1.delete(0, END)
+
+# runs the conditional statements for the buttons and flex resister
+# this is the bulk of our calculations
+def playGame():
+    redB = 17
+    greenB = 27
+    blueB = 22
+
+    DEBUG = 1
+    GPIO.setmode(GPIO.BCM)
+
+    # setup the input pins
+    GPIO.setup(redB, GPIO.IN, GPIO.PUD_DOWN)
+    GPIO.setup(greenB, GPIO.IN, GPIO.PUD_DOWN)
+    GPIO.setup(blueB, GPIO.IN, GPIO.PUD_DOWN)
+    # This is rhe test for button inputs and the required response to each circumstance.
+    try:
+        global var
+        while(True):
+            if (GPIO.input(redB) == True and GPIO.input(greenB) == True and GPIO.input(blueB) == True):
+                if (RCtime(18) >= 2001 and RCtime(18) <= 3000):
+                    var = "I AM A WORD OF FIVE LETTERS"
+                    return var
+                    
+            elif (GPIO.input(redB) == True and GPIO.input(greenB) == True):
+                if (RCtime(18) >= 100 and RCtime(18) <= 1000):
+                    var = "I BECOME A FORM OF ENERGY"
+                    return var
+                
+            elif (GPIO.input(redB) == True and GPIO.input(blueB) == True):
+                if (RCtime(18) >= 5001 and RCtime(18) <= 6000):
+                    var = "REMOVE THE FIRST TWO AND"
+                    return var
+			
+            elif (GPIO.input(greenB) == True and GPIO.input(blueB) == True):
+                if (RCtime(18) >= 7001 and RCtime(18) <= 8000):
+                    var = "AND YOU CAN DRINK ME"
+                    return var
+			
+            elif (GPIO.input(redB) == True):
+                if (RCtime(18) >= 6001 and RCtime(18) <= 7000):
+                    var = "SCRAMBLE THE LAST THREE"
+                    return var
+                
+            elif (GPIO.input(greenB) == True):
+                if (RCtime(18) >= 3001 and RCtime(18) <= 4000):
+                    var = "AND PEOPLE EAT ME IF"
+                    return var
+                        
+            
+            elif (GPIO.input(blueB) == True):
+                if (RCtime(18) >= 1001 and RCtime(18) <= 2000):
+                    var = "IM AM NEEDED TO LIVE"
+                    return var
+			
+            elif (GPIO.input(redB) == False and GPIO.input(greenB) == False and GPIO.input(blueB) == False):
+                if (RCtime(18) >= 4001 and RCtime(18) <= 5000):
+                    var = "Convert Me--One Word: 6F202F204F202F202F402F2f40204F"
+                    return var
+    except:
+        pass
+                
+
+# cleans the breadboard
+GPIO.cleanup()
+
+window = Tk()
+window.title("Spectro Game ;D")
+t = Spectro(window)
+sTime = default_timer()
+t.setUpSpectro()
+window.mainloop()
